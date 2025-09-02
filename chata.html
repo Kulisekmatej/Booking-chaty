@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horská chata</title>
+    <link rel="stylesheet" href="chad.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <li><a href="chata.php">Domů</a></li>
+                <li><a href="turisticke-cile.php">Turistické cíle</a></li>
+                <li><a href="cenik.php">Ceník</a></li>
+                <li><a href="kontakty.php">Kontakty</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Vítejte na Horském penzionu</h1>
+            <p>V srdci přírody, ideální pro relaxaci a dobrodružství.</p>
+        </div>
+        <div class="hero-image">
+            <img src="images/cabin.jpg" alt="Horská chata">
+        </div>
+    </section>
+
+    <section class="gallery">
+        <h2>Fotogalerie</h2>
+        <div class="gallery-grid">
+            <img src="1.jpeg" alt="Chata 1">
+            <img src="2.jpeg" alt="Chata 2">
+            <img src="3.jpeg" alt="Chata 3">
+            <img src="4.jpeg" alt="Chata 4">
+            <img src="5.jpeg" alt="chata 5">
+            <img src="6.jpeg" alt="Chata 6">
+            <img src="7.jpeg" alt="Chata 7">
+            <img src="8.jpeg" alt="Chata 8">
+            <img src="9.jpeg" alt="Chata 9">
+            <img src="10.jpeg" alt="Chata 10">
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Horská chata | Všechna práva vyhrazena</p>
+    </footer>
+
+    <script>
+        document.querySelector('.hamburger').addEventListener('click', function() {
+            document.querySelector('nav ul').classList.toggle('open');
+        });
+    </script>
+</body>
+</html>
