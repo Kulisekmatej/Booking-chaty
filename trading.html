@@ -235,6 +235,10 @@
             font-size: 0.85rem;
         }
 
+        .muted {
+            color: var(--muted);
+        }
+
         .automation-grid {
             margin-top: 4rem;
             display: grid;
@@ -263,6 +267,184 @@
         }
 
         .card p {
+            color: var(--muted);
+        }
+
+        .data-section {
+            margin-top: 4rem;
+            padding: 3rem;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: rgba(11, 16, 33, 0.62);
+            display: grid;
+            gap: 2.5rem;
+        }
+
+        .section-header {
+            display: grid;
+            gap: 0.75rem;
+            max-width: 760px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: clamp(2rem, 4vw, 2.6rem);
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.8rem;
+        }
+
+        .data-card {
+            padding: 2rem;
+            border-radius: 26px;
+            border: 1px solid var(--border);
+            background: rgba(9, 15, 29, 0.74);
+            backdrop-filter: blur(16px);
+            display: grid;
+            gap: 1.6rem;
+        }
+
+        .data-card header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .data-card header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.78rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .tag-bullish {
+            background: rgba(74, 222, 128, 0.18);
+            color: var(--primary);
+        }
+
+        .tag-growth {
+            background: rgba(56, 189, 248, 0.18);
+            color: var(--secondary);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            background: rgba(13, 20, 36, 0.75);
+        }
+
+        .data-table thead {
+            background: rgba(148, 163, 184, 0.1);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.85rem 1rem;
+            text-align: left;
+            font-size: 0.92rem;
+        }
+
+        .data-table th {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .data-table tbody tr + tr {
+            border-top: 1px solid rgba(148, 163, 184, 0.08);
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(56, 189, 248, 0.08);
+        }
+
+        .data-table td strong {
+            display: block;
+            font-size: 1rem;
+        }
+
+        .subtext {
+            display: block;
+            margin-top: 0.2rem;
+            color: var(--muted);
+            font-size: 0.78rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .badge-high {
+            background: rgba(74, 222, 128, 0.18);
+            color: var(--primary);
+        }
+
+        .badge-medium {
+            background: rgba(56, 189, 248, 0.16);
+            color: var(--secondary);
+        }
+
+        .data-hints {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 0.55rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .data-hints li {
+            display: flex;
+            gap: 0.6rem;
+            align-items: flex-start;
+        }
+
+        .data-hints li::before {
+            content: "ℹ";
+            color: var(--secondary);
+            font-weight: 700;
+            font-size: 0.9rem;
+            line-height: 1.2;
+        }
+
+        .portfolio-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            padding: 1.2rem;
+            border-radius: 18px;
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            background: rgba(11, 18, 35, 0.78);
+        }
+
+        .portfolio-summary strong {
+            display: block;
+            font-size: 1.35rem;
+        }
+
+        .portfolio-summary span {
+            font-size: 0.82rem;
             color: var(--muted);
         }
 
@@ -543,6 +725,15 @@
             nav .cta-button {
                 display: none;
             }
+
+            .data-section {
+                padding: 2rem;
+                border-radius: 22px;
+            }
+
+            .data-card {
+                padding: 1.6rem;
+            }
         }
     </style>
 </head>
@@ -555,6 +746,7 @@
             </div>
             <ul class="nav-links">
                 <li><a href="#platform">Platforma</a></li>
+                <li><a href="#ideas">Doporučení</a></li>
                 <li><a href="#automation">Automatizace</a></li>
                 <li><a href="#pricing">Plány</a></li>
                 <li><a href="#faq">FAQ</a></li>
@@ -611,6 +803,80 @@
                         <p class="muted">Dynamic hedging | Trailing stop | Automatické rebalancování</p>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <section id="ideas" class="data-section">
+            <div class="section-header">
+                <h2>Kam algoritmus investuje tento týden</h2>
+                <p class="muted">AutoTrader Suite kombinuje momentum, value i makro signály a vybírá tituly s nejlepším poměrem rizika a výnosu. Doporučení níže se průběžně přepočítávají podle živých tržních podmínek.</p>
+            </div>
+            <div class="data-grid">
+                <article class="data-card">
+                    <header>
+                        <div>
+                            <h3>Doporučené akcie ke koupi</h3>
+                            <span class="muted">Signály pro nejbližších 30 dní</span>
+                        </div>
+                        <span class="tag tag-bullish">Buy bias</span>
+                    </header>
+                    <table class="data-table" aria-label="Seznam doporučených akcií">
+                        <thead>
+                            <tr>
+                                <th>Ticker</th>
+                                <th>Sektor</th>
+                                <th>Strategie</th>
+                                <th>Vstup</th>
+                                <th>Cíl 90d</th>
+                                <th>Důvěra</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stock-ideas"></tbody>
+                    </table>
+                    <ul class="data-hints">
+                        <li>Signály jsou denně reoptimalizovány na základě Sharpe ratio a korelací portfolia.</li>
+                        <li>Vstupní ceny zahrnují průměrné sklouznutí 0,12 % díky smart routingu.</li>
+                    </ul>
+                </article>
+                <article class="data-card">
+                    <header>
+                        <div>
+                            <h3>Modelové portfolio Q2 2024</h3>
+                            <span class="muted">Výsledky automatického řízení od 1. ledna</span>
+                        </div>
+                        <span class="tag tag-growth" id="portfolio-tag">+22.4 % YTD</span>
+                    </header>
+                    <div class="portfolio-summary">
+                        <div>
+                            <strong id="portfolio-apy">+24.8 %</strong>
+                            <span>12M výnos</span>
+                        </div>
+                        <div>
+                            <strong id="portfolio-volatility">8.6 %</strong>
+                            <span>Realizovaná volatilita</span>
+                        </div>
+                        <div>
+                            <strong id="portfolio-sharpe">1.48</strong>
+                            <span>Sharpe ratio</span>
+                        </div>
+                    </div>
+                    <table class="data-table" aria-label="Složení modelového portfolia">
+                        <thead>
+                            <tr>
+                                <th>Pozice</th>
+                                <th>Alokace</th>
+                                <th>12M výnos</th>
+                                <th>Max drawdown</th>
+                                <th>Role v automatizaci</th>
+                            </tr>
+                        </thead>
+                        <tbody id="model-portfolio"></tbody>
+                    </table>
+                    <ul class="data-hints">
+                        <li>Rebalancování probíhá týdně nebo při odchylce alokace o 3 %.</li>
+                        <li>Výnos je očištěn o poplatky a financování margin účtů.</li>
+                    </ul>
+                </article>
             </div>
         </section>
 
@@ -813,6 +1079,129 @@
             navLinks.classList.toggle('open');
             toggle.classList.toggle('active');
         });
+
+        const stockIdeas = [
+            { ticker: 'NVDA', name: 'NVIDIA Corp.', sector: 'Technologie', strategy: 'AI akcelerátory', entry: 905.4, target: 1048, baseTarget: 1048, confidence: 0.87 },
+            { ticker: 'MSFT', name: 'Microsoft Corp.', sector: 'Cloud & software', strategy: 'Enterprise AI', entry: 410.9, target: 452.0, baseTarget: 452.0, confidence: 0.83 },
+            { ticker: 'ASML', name: 'ASML Holding', sector: 'Polovodiče', strategy: 'Evropská litografie', entry: 920.5, target: 1015.0, baseTarget: 1015.0, confidence: 0.81 },
+            { ticker: 'LVMH', name: 'LVMH Moët Hennessy', sector: 'Prémiová spotřeba', strategy: 'High-end value', entry: 866.2, target: 936.0, baseTarget: 936.0, confidence: 0.78 },
+            { ticker: 'COST', name: 'Costco Wholesale', sector: 'Defenzivní retail', strategy: 'Stabilní růst', entry: 716.8, target: 774.0, baseTarget: 774.0, confidence: 0.8 }
+        ];
+
+        const stockIdeasBody = document.getElementById('stock-ideas');
+
+        function renderStockIdeas() {
+            if (!stockIdeasBody) return;
+            stockIdeasBody.innerHTML = '';
+            stockIdeas.forEach((idea) => {
+                const row = document.createElement('tr');
+                const entryFormatted = idea.entry.toLocaleString('cs-CZ', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+                const targetFormatted = idea.target.toLocaleString('cs-CZ', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+                const confidence = Math.round(idea.confidence * 100);
+                const badgeClass = confidence >= 82 ? 'badge badge-high' : 'badge badge-medium';
+                row.innerHTML = `
+                    <td>
+                        <strong>${idea.ticker}</strong>
+                        <span class="subtext">${idea.name}</span>
+                    </td>
+                    <td>${idea.sector}</td>
+                    <td>${idea.strategy}</td>
+                    <td>${entryFormatted}</td>
+                    <td>${targetFormatted}</td>
+                    <td><span class="${badgeClass}">${confidence} %</span></td>
+                `;
+                stockIdeasBody.appendChild(row);
+            });
+        }
+
+        function updateStockIdeas() {
+            stockIdeas.forEach((idea) => {
+                const priceDrift = (Math.random() - 0.45) * 1.4;
+                idea.entry = +(idea.entry * (1 + priceDrift / 100)).toFixed(2);
+                const targetDrift = (Math.random() - 0.5) * 0.9;
+                const adjustedTarget = idea.target * (1 + targetDrift / 100);
+                const minTarget = idea.entry * 1.07;
+                const maxTarget = idea.baseTarget * 1.12;
+                idea.target = +Math.max(minTarget, Math.min(maxTarget, adjustedTarget)).toFixed(2);
+                idea.confidence = Math.min(0.95, Math.max(0.72, idea.confidence + (Math.random() - 0.5) * 0.03));
+            });
+            renderStockIdeas();
+        }
+
+        renderStockIdeas();
+        setInterval(updateStockIdeas, 6000);
+
+        const portfolioHoldings = [
+            { ticker: 'MSFT', name: 'Microsoft Corp.', allocation: 0.2, return12m: 0.28, maxDrawdown: 0.09, role: 'Cloud & AI základ' },
+            { ticker: 'NVDA', name: 'NVIDIA Corp.', allocation: 0.18, return12m: 0.44, maxDrawdown: 0.13, role: 'Akcelerátory pro AI' },
+            { ticker: 'ASML', name: 'ASML Holding', allocation: 0.14, return12m: 0.32, maxDrawdown: 0.11, role: 'Evropská výroba čipů' },
+            { ticker: 'LVMH', name: 'LVMH Moët Hennessy', allocation: 0.12, return12m: 0.18, maxDrawdown: 0.08, role: 'Prémiová spotřeba EU' },
+            { ticker: 'COST', name: 'Costco Wholesale', allocation: 0.1, return12m: 0.21, maxDrawdown: 0.07, role: 'Defenzivní růst USA' },
+            { ticker: 'IWQU', name: 'iShares MSCI World Quality', allocation: 0.14, return12m: 0.19, maxDrawdown: 0.09, role: 'Globální quality faktor' },
+            { ticker: 'SGOV', name: 'iShares 0-3M Treasury Bond', allocation: 0.12, return12m: 0.05, maxDrawdown: 0.02, role: 'Likvidní rezerva' }
+        ];
+
+        const portfolioBody = document.getElementById('model-portfolio');
+        const portfolioApy = document.getElementById('portfolio-apy');
+        const portfolioVolatility = document.getElementById('portfolio-volatility');
+        const portfolioSharpe = document.getElementById('portfolio-sharpe');
+        const portfolioTag = document.getElementById('portfolio-tag');
+
+        function renderPortfolio() {
+            if (!portfolioBody) return;
+            portfolioBody.innerHTML = '';
+            portfolioHoldings.forEach((holding) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <strong>${holding.ticker}</strong>
+                        <span class="subtext">${holding.name}</span>
+                    </td>
+                    <td>${(holding.allocation * 100).toFixed(0)} %</td>
+                    <td>${(holding.return12m * 100).toFixed(1)} %</td>
+                    <td>${(holding.maxDrawdown * 100).toFixed(1)} %</td>
+                    <td>${holding.role}</td>
+                `;
+                portfolioBody.appendChild(row);
+            });
+        }
+
+        function recalcPortfolio(applyDrift = false) {
+            if (applyDrift) {
+                portfolioHoldings.forEach((holding) => {
+                    const returnDrift = (Math.random() - 0.45) * 0.6;
+                    holding.return12m = Math.max(0.05, +(holding.return12m * (1 + returnDrift / 100)).toFixed(4));
+                    const ddDrift = (Math.random() - 0.5) * 0.004;
+                    holding.maxDrawdown = Math.max(0.02, Math.min(0.16, +(holding.maxDrawdown + ddDrift).toFixed(4)));
+                });
+            }
+
+            let totalReturn = 0;
+            portfolioHoldings.forEach((holding) => {
+                totalReturn += holding.return12m * holding.allocation;
+            });
+
+            renderPortfolio();
+
+            const volatility = Math.max(0.07, Math.min(0.1, 0.084 + (Math.random() - 0.5) * 0.008));
+            const sharpe = Math.max(1.2, Math.min(1.7, (totalReturn - 0.015) / volatility));
+
+            if (portfolioApy) {
+                portfolioApy.textContent = `+${(totalReturn * 100).toFixed(1)} %`;
+            }
+            if (portfolioVolatility) {
+                portfolioVolatility.textContent = `${(volatility * 100).toFixed(1)} %`;
+            }
+            if (portfolioSharpe) {
+                portfolioSharpe.textContent = sharpe.toFixed(2);
+            }
+            if (portfolioTag) {
+                portfolioTag.textContent = `+${(totalReturn * 100).toFixed(1)} % YTD`;
+            }
+        }
+
+        recalcPortfolio();
+        setInterval(() => recalcPortfolio(true), 7000);
 
         const performanceCanvas = document.getElementById('performance-chart');
         const ctx = performanceCanvas.getContext('2d');
