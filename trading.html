@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plně automatizované tradingové centrum</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b1021;
+            --bg-card: rgba(23, 32, 58, 0.75);
+            --primary: #4ade80;
+            --secondary: #38bdf8;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.15);
+            --gradient: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(56, 189, 248, 0.1));
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), transparent 40%),
+                        radial-gradient(circle at bottom right, rgba(74, 222, 128, 0.2), transparent 35%),
+                        var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(12px);
+            background: rgba(11, 16, 33, 0.75);
+            border-bottom: 1px solid var(--border);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem clamp(1.5rem, 5vw, 4rem);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .logo span:first-child {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.25), rgba(56, 189, 248, 0.35));
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .cta-button {
+            padding: 0.7rem 1.6rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(120deg, #4ade80, #22d3ee);
+            color: #00131f;
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(34, 211, 238, 0.35);
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .menu-toggle span {
+            width: 26px;
+            height: 2px;
+            background: var(--text);
+            border-radius: 999px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        main {
+            padding: clamp(2rem, 4vw, 4rem);
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: clamp(2rem, 6vw, 4rem);
+            align-items: center;
+            padding: clamp(3rem, 6vw, 5rem) clamp(1rem, 5vw, 4rem);
+            margin-top: clamp(1.5rem, 5vh, 3rem);
+            background: var(--gradient);
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at right, rgba(56, 189, 248, 0.3), transparent 55%);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .hero-text h1 {
+            font-size: clamp(2.5rem, 5vw, 3.8rem);
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .hero-text p {
+            color: var(--muted);
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric {
+            position: relative;
+            padding: 1.4rem;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            background: rgba(11, 16, 33, 0.65);
+            backdrop-filter: blur(12px);
+            overflow: hidden;
+        }
+
+        .metric strong {
+            display: block;
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .metric span {
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+
+        .metric small {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-top: 0.6rem;
+            padding: 0.35rem 0.65rem;
+            border-radius: 999px;
+            background: rgba(74, 222, 128, 0.16);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.82rem;
+        }
+
+        .dashboard-card {
+            position: relative;
+            padding: 2rem;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            background: rgba(10, 16, 29, 0.7);
+            backdrop-filter: blur(18px);
+            box-shadow: 0 30px 60px rgba(8, 15, 33, 0.45);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.16);
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .automation-grid {
+            margin-top: 4rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.8rem;
+        }
+
+        .card {
+            position: relative;
+            padding: 1.8rem;
+            border-radius: 22px;
+            border: 1px solid var(--border);
+            background: rgba(11, 18, 35, 0.78);
+            backdrop-filter: blur(14px);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            font-size: 1.2rem;
+        }
+
+        .card p {
+            color: var(--muted);
+        }
+
+        .data-section {
+            margin-top: 4rem;
+            padding: 3rem;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: rgba(11, 16, 33, 0.62);
+            display: grid;
+            gap: 2.5rem;
+        }
+
+        .section-header {
+            display: grid;
+            gap: 0.75rem;
+            max-width: 760px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: clamp(2rem, 4vw, 2.6rem);
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.8rem;
+        }
+
+        .data-card {
+            padding: 2rem;
+            border-radius: 26px;
+            border: 1px solid var(--border);
+            background: rgba(9, 15, 29, 0.74);
+            backdrop-filter: blur(16px);
+            display: grid;
+            gap: 1.6rem;
+        }
+
+        .data-card header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .data-card header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.78rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .tag-bullish {
+            background: rgba(74, 222, 128, 0.18);
+            color: var(--primary);
+        }
+
+        .tag-growth {
+            background: rgba(56, 189, 248, 0.18);
+            color: var(--secondary);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            background: rgba(13, 20, 36, 0.75);
+        }
+
+        .data-table thead {
+            background: rgba(148, 163, 184, 0.1);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.85rem 1rem;
+            text-align: left;
+            font-size: 0.92rem;
+        }
+
+        .data-table th {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .data-table tbody tr + tr {
+            border-top: 1px solid rgba(148, 163, 184, 0.08);
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(56, 189, 248, 0.08);
+        }
+
+        .data-table td strong {
+            display: block;
+            font-size: 1rem;
+        }
+
+        .subtext {
+            display: block;
+            margin-top: 0.2rem;
+            color: var(--muted);
+            font-size: 0.78rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .badge-high {
+            background: rgba(74, 222, 128, 0.18);
+            color: var(--primary);
+        }
+
+        .badge-medium {
+            background: rgba(56, 189, 248, 0.16);
+            color: var(--secondary);
+        }
+
+        .data-hints {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 0.55rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .data-hints li {
+            display: flex;
+            gap: 0.6rem;
+            align-items: flex-start;
+        }
+
+        .data-hints li::before {
+            content: "ℹ";
+            color: var(--secondary);
+            font-weight: 700;
+            font-size: 0.9rem;
+            line-height: 1.2;
+        }
+
+        .portfolio-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            padding: 1.2rem;
+            border-radius: 18px;
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            background: rgba(11, 18, 35, 0.78);
+        }
+
+        .portfolio-summary strong {
+            display: block;
+            font-size: 1.35rem;
+        }
+
+        .portfolio-summary span {
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        .workflow {
+            margin-top: 4rem;
+            padding: 3rem;
+            border-radius: 28px;
+            border: 1px solid var(--border);
+            background: rgba(11, 16, 33, 0.6);
+            display: grid;
+            gap: 2rem;
+        }
+
+        .workflow-steps {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .step {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            padding: 1rem 1.4rem;
+            border-radius: 18px;
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            background: rgba(15, 26, 44, 0.75);
+        }
+
+        .step strong {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: rgba(56, 189, 248, 0.18);
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        canvas {
+            width: 100%;
+            max-width: 500px;
+            height: 240px;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-top: 4rem;
+        }
+
+        .pricing-card {
+            padding: 2rem;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            background: rgba(11, 18, 35, 0.78);
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .pricing-card:hover::before {
+            opacity: 1;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            margin: 1.5rem 0 0;
+            padding: 0;
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .pricing-card li {
+            display: flex;
+            gap: 0.6rem;
+            color: var(--muted);
+        }
+
+        .pricing-card li::before {
+            content: "✔";
+            color: var(--primary);
+        }
+
+        .highlight {
+            border: 1px solid rgba(74, 222, 128, 0.55);
+            transform: translateY(-10px);
+        }
+
+        .highlight .badge {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(74, 222, 128, 0.18);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .integrations {
+            margin-top: 4rem;
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
+        .integration-card {
+            padding: 1.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: rgba(11, 18, 35, 0.78);
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .integration-card span {
+            font-size: 2.1rem;
+        }
+
+        .testimonials {
+            margin-top: 4rem;
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .testimonial {
+            padding: 1.8rem;
+            border-radius: 22px;
+            border: 1px solid var(--border);
+            background: rgba(11, 18, 35, 0.75);
+            position: relative;
+        }
+
+        .testimonial::before {
+            content: "\201C";
+            font-size: 4rem;
+            position: absolute;
+            top: -0.6rem;
+            left: 1.2rem;
+            color: rgba(74, 222, 128, 0.3);
+        }
+
+        .testimonial footer {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .automation-console {
+            margin-top: 4rem;
+            border-radius: 26px;
+            border: 1px solid var(--border);
+            background: rgba(11, 16, 33, 0.8);
+            padding: 2rem;
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .console-output {
+            font-family: "Fira Code", "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            background: rgba(3, 7, 18, 0.65);
+            border-radius: 18px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 1.25rem;
+            max-height: 220px;
+            overflow-y: auto;
+            color: #cbd5f5;
+            line-height: 1.5;
+        }
+
+        .console-output span {
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .newsletter {
+            margin-top: 4rem;
+            padding: 2.5rem;
+            border-radius: 26px;
+            border: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.15), rgba(56, 189, 248, 0.15));
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .newsletter form {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .newsletter input {
+            flex: 1;
+            min-width: 220px;
+            padding: 0.9rem 1.1rem;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(11, 16, 33, 0.6);
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .newsletter button {
+            padding: 0.9rem 1.6rem;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(120deg, #4ade80, #22d3ee);
+            font-weight: 600;
+            cursor: pointer;
+            color: #00131f;
+            min-width: 160px;
+        }
+
+        .faq {
+            margin-top: 4rem;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .faq-item {
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            background: rgba(11, 16, 33, 0.7);
+            padding: 1.4rem 1.8rem;
+        }
+
+        .faq-item h4 {
+            margin: 0 0 0.75rem;
+        }
+
+        footer {
+            margin-top: 5rem;
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            background: rgba(10, 13, 25, 0.8);
+        }
+
+        @media (max-width: 900px) {
+            .nav-links {
+                position: fixed;
+                inset: 0 0 auto;
+                height: 100vh;
+                background: rgba(10, 16, 31, 0.95);
+                flex-direction: column;
+                padding: 5rem 2rem;
+                gap: 2rem;
+                transform: translateY(-110%);
+                transition: transform 0.35s ease;
+            }
+
+            .nav-links.open {
+                transform: translateY(0);
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            nav .cta-button {
+                display: none;
+            }
+
+            .data-section {
+                padding: 2rem;
+                border-radius: 22px;
+            }
+
+            .data-card {
+                padding: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <span>AT</span>
+                <span>AutoTrader Suite</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#platform">Platforma</a></li>
+                <li><a href="#ideas">Doporučení</a></li>
+                <li><a href="#automation">Automatizace</a></li>
+                <li><a href="#pricing">Plány</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+            <button class="cta-button">Spustit demo</button>
+            <div class="menu-toggle" aria-label="Otevřít menu" role="button">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="platform" class="hero">
+            <div class="hero-text">
+                <h1>Profesionální trading bez manuální práce</h1>
+                <p>AutoTrader Suite analyzuje trhy 24/7, otevírá i uzavírá pozice podle přesných strategií a okamžitě optimalizuje riziko. Vy jen sledujete výsledky v intuitivním dashboardu.</p>
+                <div class="hero-metrics">
+                    <div class="metric">
+                        <strong id="metric-apy">–</strong>
+                        <span>Roční výkonnost modelového portfolia</span>
+                        <small>Zdroj: Yahoo Finance</small>
+                    </div>
+                    <div class="metric">
+                        <strong id="metric-trades">–</strong>
+                        <span>Denní objem sledovaných titulů</span>
+                        <small>Součet v ks</small>
+                    </div>
+                    <div class="metric">
+                        <strong id="metric-risk">–</strong>
+                        <span>Maximální drawdown (12M)</span>
+                        <small>Vážený průměr</small>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="dashboard-header">
+                    <h3>Živé sledování portfolia</h3>
+                    <span class="status-pill">Běží 24/7</span>
+                </div>
+                <canvas id="performance-chart" aria-label="Vývoj ziskovosti strategie"></canvas>
+                <div class="automation-grid" style="margin-top: 2rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    <div>
+                        <h4>Signály</h4>
+                        <p class="muted">Algoritmické strategie | AI analýza | Makro kalendář</p>
+                    </div>
+                    <div>
+                        <h4>Provedení</h4>
+                        <p class="muted">Smart routing | Přímé napojení na burzy | Millisekundová reakce</p>
+                    </div>
+                    <div>
+                        <h4>Kontrola rizik</h4>
+                        <p class="muted">Dynamic hedging | Trailing stop | Automatické rebalancování</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ideas" class="data-section">
+            <div class="section-header">
+                <h2>Kam algoritmus investuje tento týden</h2>
+                <p class="muted">AutoTrader Suite kombinuje momentum, value i makro signály a vybírá tituly s nejlepším poměrem rizika a výnosu. Doporučení níže se průběžně přepočítávají podle živých tržních podmínek.</p>
+            </div>
+            <div class="data-grid">
+                <article class="data-card">
+                    <header>
+                        <div>
+                            <h3>Doporučené akcie ke koupi</h3>
+                            <span class="muted">Signály pro nejbližších 30 dní · data Yahoo Finance</span>
+                        </div>
+                        <span class="tag tag-bullish">Buy bias</span>
+                    </header>
+                    <table class="data-table" aria-label="Seznam doporučených akcií">
+                        <thead>
+                            <tr>
+                                <th>Ticker</th>
+                                <th>Sektor</th>
+                                <th>Strategie</th>
+                                <th>Vstup</th>
+                                <th>Cíl 90d</th>
+                                <th>Důvěra</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stock-ideas"></tbody>
+                    </table>
+                    <ul class="data-hints">
+                        <li>Vstupní ceny a cíle vycházejí z živých dat a konsenzu analytiků (target mean).</li>
+                        <li>Aktualizace probíhá automaticky každých 5 minut – není potřeba ruční zásah.</li>
+                    </ul>
+                </article>
+                <article class="data-card">
+                    <header>
+                        <div>
+                            <h3>Modelové portfolio · globální růst</h3>
+                            <span class="muted">12M historie z Yahoo Finance</span>
+                        </div>
+                        <span class="tag tag-growth" id="portfolio-tag">Načítám data…</span>
+                    </header>
+                    <div class="portfolio-summary">
+                        <div>
+                            <strong id="portfolio-apy">–</strong>
+                            <span>12M výnos</span>
+                        </div>
+                        <div>
+                            <strong id="portfolio-volatility">–</strong>
+                            <span>Realizovaná volatilita</span>
+                        </div>
+                        <div>
+                            <strong id="portfolio-sharpe">–</strong>
+                            <span>Sharpe ratio</span>
+                        </div>
+                    </div>
+                    <table class="data-table" aria-label="Složení modelového portfolia">
+                        <thead>
+                            <tr>
+                                <th>Pozice</th>
+                                <th>Alokace</th>
+                                <th>12M výnos</th>
+                                <th>Max drawdown</th>
+                                <th>Role v automatizaci</th>
+                            </tr>
+                        </thead>
+                        <tbody id="model-portfolio"></tbody>
+                    </table>
+                    <ul class="data-hints">
+                        <li>Rebalancování probíhá virtuálně dle cílových vah při každé aktualizaci.</li>
+                        <li>Výnos vychází z historických cen (adj close) očištěných o dividendy.</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <section id="automation" class="automation-grid">
+            <article class="card">
+                <h3>AI analýza sentimentu</h3>
+                <p>Pokročilé NLP modely prohledávají 12 000+ zdrojů a okamžitě upravují pozice dle nálady trhu.</p>
+                <ul>
+                    <li>Automatické filtrování fake news</li>
+                    <li>Integrace s ekonomickým kalendářem</li>
+                    <li>Alerty jen při zásadní změně</li>
+                </ul>
+            </article>
+            <article class="card">
+                <h3>Plně automatické portfolio</h3>
+                <p>Diverzifikované strategie pokrývají akcie, komodity, kryptoměny i forex. Systém se učí z výsledků.</p>
+                <ul>
+                    <li>Machine learning optimalizace vah</li>
+                    <li>Continuous deployment strategií</li>
+                    <li>Automatické rebalancování kapitálu</li>
+                </ul>
+            </article>
+            <article class="card">
+                <h3>Monitoring a audit</h3>
+                <p>Každý obchod je zdokumentovaný, auditován a uložený. Jedním kliknutím exportujete report pro regulaci.</p>
+                <ul>
+                    <li>MiFID II ready reporty</li>
+                    <li>Kompletní logy rozhodovacích stromů</li>
+                    <li>Role-based přístupy a notifikace</li>
+                </ul>
+            </article>
+        </section>
+
+        <section class="workflow">
+            <div>
+                <h2>Váš automatizovaný tradingový cyklus</h2>
+                <p>Platforma je navržena tak, abyste si nastavili cíle a strategii pouze jednou. Poté běží samostatně – od sběru dat po uzavření pozic a reportování výsledků.</p>
+            </div>
+            <div class="workflow-steps">
+                <div class="step">
+                    <strong>1</strong>
+                    <div>
+                        <h3>Nastavení cílového zhodnocení</h3>
+                        <p>Zvolíte toleranci rizika, preferované trhy a časový horizont. Doporučené strategie se přizpůsobí vašemu profilu.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <strong>2</strong>
+                    <div>
+                        <h3>Automatická realizace obchodů</h3>
+                        <p>Roboti provádí příkazy přes napojení na broker API. Inteligentní routing hledá nejlepší likviditu v reálném čase.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <strong>3</strong>
+                    <div>
+                        <h3>Průběžná optimalizace</h3>
+                        <p>Výkon strategií je vyhodnocován každou hodinu. Systém automaticky přidává či vypíná strategie na základě Sharpe ratio.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <strong>4</strong>
+                    <div>
+                        <h3>Reporty bez námahy</h3>
+                        <p>Každé ráno obdržíte přehled výkonnosti, otevřených pozic a rizik. Report lze exportovat do PDF/CSV nebo sdílet auditorovi.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pricing-grid" id="pricing">
+            <article class="pricing-card">
+                <h3>Starter</h3>
+                <p><strong>990 Kč</strong> / měsíc</p>
+                <ul>
+                    <li>3 přednastavené strategie</li>
+                    <li>Automatický reporting 1× denně</li>
+                    <li>Základní rizikový management</li>
+                    <li>Mobilní notifikace</li>
+                </ul>
+            </article>
+            <article class="pricing-card highlight">
+                <span class="badge">Nejoblíbenější</span>
+                <h3>Pro</h3>
+                <p><strong>2 490 Kč</strong> / měsíc</p>
+                <ul>
+                    <li>Neomezené strategie a backtesty</li>
+                    <li>AI predikce volatility</li>
+                    <li>Real-time reporting + API</li>
+                    <li>Pokročilý hedging a trailing stop</li>
+                </ul>
+            </article>
+            <article class="pricing-card">
+                <h3>Institutional</h3>
+                <p><strong>Na vyžádání</strong></p>
+                <ul>
+                    <li>Dedikovaný risk manager</li>
+                    <li>White-label řešení</li>
+                    <li>On-premise instalace</li>
+                    <li>Otevřené integrační rozhraní</li>
+                </ul>
+            </article>
+        </section>
+
+        <section class="integrations">
+            <div class="integration-card">
+                <span>🔄</span>
+                <h3>24/7 synchronizace</h3>
+                <p>Napojení na Interactive Brokers, Binance, MetaTrader, LMAX a další brokery – včetně failover clusterů.</p>
+            </div>
+            <div class="integration-card">
+                <span>🧠</span>
+                <h3>Machine Learning</h3>
+                <p>Automatizované modely pro predikci volatility, mean reversion i momentum strategie bez manuálního zásahu.</p>
+            </div>
+            <div class="integration-card">
+                <span>🛰️</span>
+                <h3>Makro data</h3>
+                <p>Ekonomické kalendáře, satelitní snímky, logistická data a sentiment sociálních sítí v jednom feedu.</p>
+            </div>
+            <div class="integration-card">
+                <span>📊</span>
+                <h3>Reporting</h3>
+                <p>Automatická tvorba PDF/CSV reportů, export do PowerBI i přímé napojení na účetnictví.</p>
+            </div>
+        </section>
+
+        <section class="testimonials">
+            <article class="testimonial">
+                <p>„AutoTrader Suite nám ušetřil 40 hodin manuální analýzy týdně. Výsledky jsou stabilní a máme plnou kontrolu nad riziky.“</p>
+                <footer>
+                    <span>Lenka V., investiční manažerka</span>
+                    <span>Pro plán</span>
+                </footer>
+            </article>
+            <article class="testimonial">
+                <p>„Automatizace nám dovolila expandovat na 5 nových trhů během dvou měsíců. Vše funguje bez nutnosti nonstop hlídat grafy.“</p>
+                <footer>
+                    <span>Martin K., krypto fond</span>
+                    <span>Institutional</span>
+                </footer>
+            </article>
+            <article class="testimonial">
+                <p>„Zamiloval jsem si reporting. Ráno mám kompletní přehled i s vysvětlením rozhodnutí AI. Konečně spím klidně.“</p>
+                <footer>
+                    <span>David T., trader na volné noze</span>
+                    <span>Starter</span>
+                </footer>
+            </article>
+        </section>
+
+        <section class="automation-console">
+            <div>
+                <h2>Automatizovaný dohled a chytrý operační stůl</h2>
+                <p>Systém nonstop vyhodnocuje výkon, kontroluje rizika a reaguje na výkyvy. Níže vidíte živý log událostí stejně jako byste ho měli ve své aplikaci.</p>
+            </div>
+            <div class="console-output" id="console-output" aria-live="polite"></div>
+        </section>
+
+        <section class="newsletter">
+            <div>
+                <h2>Získejte přístup do sandboxu</h2>
+                <p>Vyzkoušejte si automatizovaný trading na testovacím účtu. Bez rizika a bez závazků – systém vše nastaví za vás.</p>
+            </div>
+            <form>
+                <input type="email" name="email" placeholder="E-mail pro zaslání přístupu" required>
+                <button type="submit">Aktivovat sandbox</button>
+            </form>
+        </section>
+
+        <section class="faq" id="faq">
+            <div class="faq-item">
+                <h4>Co musím udělat pro spuštění automatizace?</h4>
+                <p>Stačí vyplnit onboardingový formulář a vybrat si strategické balíčky. Naši specialisté následně vše propojí s vaším brokerem, nastaví limity a spustí robota.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Jak je řešeno řízení rizik?</h4>
+                <p>Každá strategie má definovaný maximální drawdown, denní i týdenní limit ztráty a automatický hedging. Platforma také průběžně analyzuje korelace portfolia.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Mohu kombinovat automatizaci s manuálními obchody?</h4>
+                <p>Ano. V aplikaci lze kdykoli přidat manuální pozici. Systém ji zahrne do risk managementu a automaticky upraví další obchody tak, aby respektovaly vaše rozhodnutí.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Je možné napojení na vlastní datové zdroje?</h4>
+                <p>Pro uživatele plánu Pro a Institutional nabízíme otevřené API. Napojíte vlastní datové feedy i proprietární strategie, které systém bude spravovat 24/7.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 AutoTrader Suite. Všechna práva vyhrazena. Kompletně automatizovaný tradingový ekosystém pro váš klidný spánek.</p>
+    </footer>
+
+    <script>
+        const navLinks = document.querySelector('.nav-links');
+        const toggle = document.querySelector('.menu-toggle');
+        if (toggle && navLinks) {
+            toggle.addEventListener('click', () => {
+                navLinks.classList.toggle('open');
+                toggle.classList.toggle('active');
+            });
+        }
+
+        const stockIdeas = [
+            { ticker: 'NVDA', name: 'NVIDIA Corp.', sector: 'Technologie', strategy: 'AI akcelerátory' },
+            { ticker: 'MSFT', name: 'Microsoft Corp.', sector: 'Cloud & software', strategy: 'Enterprise řešení' },
+            { ticker: 'AAPL', name: 'Apple Inc.', sector: 'Spotřební technologie', strategy: 'Prémiový ekosystém' },
+            { ticker: 'GOOGL', name: 'Alphabet Inc.', sector: 'Internet & data', strategy: 'AI cloud' },
+            { ticker: 'AMZN', name: 'Amazon.com Inc.', sector: 'E-commerce & cloud', strategy: 'Diversifikovaný růst' }
+        ];
+
+        const portfolioHoldings = [
+            { ticker: 'MSFT', name: 'Microsoft Corp.', allocation: 0.18, role: 'Cloud platformy' },
+            { ticker: 'NVDA', name: 'NVIDIA Corp.', allocation: 0.16, role: 'AI infrastruktura' },
+            { ticker: 'AAPL', name: 'Apple Inc.', allocation: 0.14, role: 'Spotřební technologie' },
+            { ticker: 'GOOGL', name: 'Alphabet Inc.', allocation: 0.12, role: 'Digitální reklama' },
+            { ticker: 'AMZN', name: 'Amazon.com Inc.', allocation: 0.10, role: 'E-commerce & AWS' },
+            { ticker: 'VOO', name: 'Vanguard S&P 500 ETF', allocation: 0.18, role: 'Core US trh' },
+            { ticker: 'VXUS', name: 'Vanguard Total International ETF', allocation: 0.07, role: 'Svět ex-USA' },
+            { ticker: 'BND', name: 'Vanguard Total Bond Market ETF', allocation: 0.05, role: 'Defenzivní složka' }
+        ];
+
+        const trackedTickers = Array.from(new Set([...stockIdeas, ...portfolioHoldings].map((item) => item.ticker)));
+
+        const stockIdeasBody = document.getElementById('stock-ideas');
+        const portfolioBody = document.getElementById('model-portfolio');
+        const portfolioApy = document.getElementById('portfolio-apy');
+        const portfolioVolatility = document.getElementById('portfolio-volatility');
+        const portfolioSharpe = document.getElementById('portfolio-sharpe');
+        const portfolioTag = document.getElementById('portfolio-tag');
+        const metricApy = document.getElementById('metric-apy');
+        const metricTrades = document.getElementById('metric-trades');
+        const metricRisk = document.getElementById('metric-risk');
+        const performanceCanvas = document.getElementById('performance-chart');
+        const ctx = performanceCanvas ? performanceCanvas.getContext('2d') : null;
+        const consoleOutput = document.getElementById('console-output');
+
+        let portfolioSeries = [];
+        let lastUpdateTime = null;
+
+        function formatCurrency(value, currency = 'USD') {
+            if (!Number.isFinite(value)) {
+                return '–';
+            }
+            try {
+                return new Intl.NumberFormat('cs-CZ', {
+                    style: 'currency',
+                    currency,
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2
+                }).format(value);
+            } catch {
+                return `${value.toFixed(2)} ${currency}`;
+            }
+        }
+
+        function formatPercent(value, options = {}) {
+            if (!Number.isFinite(value)) {
+                return '–';
+            }
+            const percentValue = value * 100;
+            const { showSign = true } = options;
+            const absolute = Math.abs(percentValue).toFixed(1);
+            if (!showSign) {
+                return `${absolute} %`;
+            }
+            const sign = percentValue >= 0 ? '+' : '−';
+            return `${sign}${absolute} %`;
+        }
+
+        function renderStockIdeas() {
+            if (!stockIdeasBody) return;
+            stockIdeasBody.innerHTML = '';
+            stockIdeas.forEach((idea) => {
+                const row = document.createElement('tr');
+                const currency = idea.currency || 'USD';
+                const priceCell = formatCurrency(idea.price, currency);
+                const targetCell = Number.isFinite(idea.target) ? formatCurrency(idea.target, currency) : '–';
+                const hasConfidence = Number.isFinite(idea.confidence);
+                const confidenceValue = hasConfidence ? `${Math.round(idea.confidence)} %` : '–';
+                const badgeClass = hasConfidence ? (idea.confidence >= 80 ? 'badge badge-high' : 'badge badge-medium') : 'badge';
+                row.innerHTML = `
+                    <td>
+                        <strong>${idea.ticker}</strong>
+                        <span class="subtext">${idea.name}</span>
+                    </td>
+                    <td>${idea.sector}</td>
+                    <td>${idea.strategy}</td>
+                    <td>${priceCell}</td>
+                    <td>${targetCell}</td>
+                    <td><span class="${badgeClass}">${confidenceValue}</span></td>
+                `;
+                stockIdeasBody.appendChild(row);
+            });
+        }
+
+        function renderPortfolio() {
+            if (!portfolioBody) return;
+            portfolioBody.innerHTML = '';
+            portfolioHoldings.forEach((holding) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <strong>${holding.ticker}</strong>
+                        <span class="subtext">${holding.name}</span>
+                    </td>
+                    <td>${(holding.allocation * 100).toFixed(0)} %</td>
+                    <td>${formatPercent(holding.return12m, { showSign: true })}</td>
+                    <td>${formatPercent(holding.maxDrawdown, { showSign: false })}</td>
+                    <td>${holding.role}</td>
+                `;
+                portfolioBody.appendChild(row);
+            });
+        }
+
+        function drawChartFromSeries(series) {
+            if (!performanceCanvas || !ctx) return;
+            performanceCanvas.width = performanceCanvas.offsetWidth;
+            performanceCanvas.height = performanceCanvas.offsetHeight;
+            ctx.clearRect(0, 0, performanceCanvas.width, performanceCanvas.height);
+
+            if (!series.length) {
+                ctx.fillStyle = 'rgba(148, 163, 184, 0.45)';
+                ctx.font = '16px "Manrope", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Čekám na data…', performanceCanvas.width / 2, performanceCanvas.height / 2);
+                return;
+            }
+
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.85)';
+            ctx.lineWidth = 3;
+
+            const padding = 28;
+            const values = series.map((point) => point.value);
+            const maxValue = Math.max(...values);
+            const minValue = Math.min(...values);
+            const width = performanceCanvas.width - padding * 2;
+            const height = performanceCanvas.height - padding * 2;
+
+            series.forEach((point, index) => {
+                const x = padding + (index / (series.length - 1)) * width;
+                const y = padding + height - ((point.value - minValue) / (maxValue - minValue || 1)) * height;
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+
+            const gradient = ctx.createLinearGradient(0, padding, 0, performanceCanvas.height - padding);
+            gradient.addColorStop(0, 'rgba(56, 189, 248, 0.3)');
+            gradient.addColorStop(1, 'rgba(56, 189, 248, 0)');
+
+            ctx.lineTo(performanceCanvas.width - padding, performanceCanvas.height - padding);
+            ctx.lineTo(padding, performanceCanvas.height - padding);
+            ctx.closePath();
+            ctx.fillStyle = gradient;
+            ctx.fill();
+        }
+
+        function logConsoleMessage(message) {
+            if (!consoleOutput) return;
+            const entry = document.createElement('span');
+            const timestamp = new Date().toLocaleTimeString('cs-CZ', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            entry.textContent = `[${timestamp}] ${message}`;
+            consoleOutput.prepend(entry);
+            while (consoleOutput.children.length > 15) {
+                consoleOutput.removeChild(consoleOutput.lastChild);
+            }
+        }
+
+        async function fetchQuotes(tickers) {
+            if (!tickers.length) {
+                return new Map();
+            }
+            const symbols = tickers.map((symbol) => encodeURIComponent(symbol)).join(',');
+            const url = `https://query1.finance.yahoo.com/v7/finance/quote?lang=cs-CZ&region=US&symbols=${symbols}`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            const data = await response.json();
+            const results = data?.quoteResponse?.result || [];
+            const map = new Map();
+            results.forEach((item) => {
+                map.set(item.symbol, item);
+            });
+            return map;
+        }
+
+        async function fetchHistory(ticker) {
+            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=1y&interval=1d&includeAdjustedClose=true`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Chart ${response.status}`);
+            }
+            const json = await response.json();
+            const result = json?.chart?.result?.[0];
+            if (!result) {
+                throw new Error('Prázdná odpověď grafu');
+            }
+            const timestamps = result.timestamp || [];
+            const closes = result.indicators?.adjclose?.[0]?.adjclose || [];
+            const points = timestamps.map((ts, index) => {
+                const value = closes[index];
+                if (!Number.isFinite(value)) return null;
+                return {
+                    timestamp: ts * 1000,
+                    value: value
+                };
+            }).filter(Boolean);
+            if (!points.length) {
+                throw new Error('Chybí historická data');
+            }
+            const firstValue = points[0].value;
+            const lastValue = points[points.length - 1].value;
+            let peak = points[0].value;
+            let maxDrawdown = 0;
+            points.forEach((point) => {
+                if (point.value > peak) {
+                    peak = point.value;
+                }
+                const drawdown = (peak - point.value) / peak;
+                if (drawdown > maxDrawdown) {
+                    maxDrawdown = drawdown;
+                }
+            });
+            const series = points.map((point) => ({
+                timestamp: point.timestamp,
+                normalized: point.value / firstValue,
+                value: point.value
+            }));
+            return {
+                return12m: (lastValue - firstValue) / firstValue,
+                maxDrawdown,
+                series
+            };
+        }
+
+        function applyQuotesToStockIdeas(quoteMap) {
+            stockIdeas.forEach((idea) => {
+                const quote = quoteMap.get(idea.ticker);
+                if (!quote) return;
+                idea.name = quote.longName || idea.name;
+                if (Number.isFinite(quote.regularMarketPrice)) {
+                    idea.price = quote.regularMarketPrice;
+                }
+                if (quote.currency) {
+                    idea.currency = quote.currency;
+                }
+                const analystTarget = Number.isFinite(quote.targetMeanPrice) ? quote.targetMeanPrice : quote.fiftyTwoWeekHigh;
+                if (Number.isFinite(analystTarget)) {
+                    idea.target = analystTarget;
+                } else if (Number.isFinite(quote.regularMarketPrice)) {
+                    idea.target = quote.regularMarketPrice * 1.08;
+                }
+                if (Number.isFinite(quote.recommendationMean)) {
+                    const normalized = Math.max(0, Math.min(1, (5 - quote.recommendationMean) / 4));
+                    idea.confidence = Math.max(55, Math.min(95, 55 + normalized * 40));
+                } else if (Number.isFinite(quote.regularMarketChangePercent)) {
+                    const base = Math.max(-5, Math.min(5, quote.regularMarketChangePercent));
+                    idea.confidence = Math.max(50, Math.min(90, 70 + base * 2));
+                } else {
+                    idea.confidence = undefined;
+                }
+                if (Number.isFinite(idea.confidence)) {
+                    idea.confidence = Math.max(0, Math.min(100, idea.confidence));
+                }
+            });
+            renderStockIdeas();
+        }
+
+        function computePortfolioAggregates() {
+            const validHoldings = portfolioHoldings.filter((holding) => Array.isArray(holding.series) && holding.series.length > 0);
+            if (!validHoldings.length) {
+                drawChartFromSeries([]);
+                if (portfolioApy) portfolioApy.textContent = '–';
+                if (portfolioVolatility) portfolioVolatility.textContent = '–';
+                if (portfolioSharpe) portfolioSharpe.textContent = '–';
+                return { totalReturn: NaN, annualVol: NaN, avgDrawdown: NaN };
+            }
+
+            const points = new Map();
+            const totalWeight = validHoldings.reduce((sum, holding) => sum + holding.allocation, 0);
+            validHoldings.forEach((holding) => {
+                const weight = totalWeight > 0 ? holding.allocation / totalWeight : holding.allocation;
+                holding.series.forEach((point) => {
+                    const accumulated = points.get(point.timestamp) || 0;
+                    points.set(point.timestamp, accumulated + point.normalized * weight);
+                });
+            });
+
+            const combined = Array.from(points.entries())
+                .sort((a, b) => a[0] - b[0])
+                .map(([timestamp, value]) => ({ timestamp, value }));
+
+            portfolioSeries = combined;
+            drawChartFromSeries(combined);
+
+            const totalReturn = combined.length ? combined[combined.length - 1].value - 1 : NaN;
+            const returns = [];
+            for (let i = 1; i < combined.length; i += 1) {
+                const prev = combined[i - 1].value;
+                const curr = combined[i].value;
+                if (prev > 0 && curr > 0) {
+                    returns.push((curr - prev) / prev);
+                }
+            }
+            const avgDaily = returns.reduce((sum, value) => sum + value, 0) / (returns.length || 1);
+            const variance = returns.reduce((sum, value) => sum + Math.pow(value - avgDaily, 2), 0) / Math.max(returns.length - 1, 1);
+            const dailyVol = Math.sqrt(variance);
+            const annualVol = dailyVol * Math.sqrt(252);
+            const avgDrawdown = validHoldings.reduce((sum, holding) => {
+                const weight = totalWeight > 0 ? holding.allocation / totalWeight : holding.allocation;
+                return sum + (holding.maxDrawdown || 0) * weight;
+            }, 0);
+
+            if (portfolioApy) {
+                portfolioApy.textContent = Number.isFinite(totalReturn) ? formatPercent(totalReturn, { showSign: true }) : '–';
+            }
+            if (portfolioVolatility) {
+                portfolioVolatility.textContent = Number.isFinite(annualVol) ? formatPercent(annualVol, { showSign: false }) : '–';
+            }
+            if (portfolioSharpe) {
+                const sharpe = Number.isFinite(annualVol) && annualVol > 0 ? (totalReturn - 0.02) / annualVol : NaN;
+                portfolioSharpe.textContent = Number.isFinite(sharpe) ? sharpe.toFixed(2) : '–';
+            }
+
+            return { totalReturn, annualVol, avgDrawdown };
+        }
+
+        function updateHeroMetrics({ totalReturn, annualVol, avgDrawdown, volumeSum }) {
+            if (metricApy) {
+                metricApy.textContent = Number.isFinite(totalReturn) ? formatPercent(totalReturn, { showSign: true }) : '–';
+            }
+            if (metricTrades) {
+                if (volumeSum) {
+                    const millions = volumeSum / 1_000_000;
+                    if (millions >= 1) {
+                        const precision = millions >= 10 ? 0 : 1;
+                        metricTrades.textContent = `${millions.toFixed(precision)} mil. ks`;
+                    } else {
+                        metricTrades.textContent = Intl.NumberFormat('cs-CZ').format(Math.round(volumeSum));
+                    }
+                } else {
+                    metricTrades.textContent = '–';
+                }
+            }
+            if (metricRisk) {
+                metricRisk.textContent = Number.isFinite(avgDrawdown) ? `-${formatPercent(avgDrawdown, { showSign: false })}` : '–';
+            }
+        }
+
+        async function updatePortfolioData(quoteMap) {
+            const histories = await Promise.all(
+                portfolioHoldings.map((holding) => fetchHistory(holding.ticker).catch(() => null))
+            );
+            let volumeSum = 0;
+            portfolioHoldings.forEach((holding, index) => {
+                const quote = quoteMap.get(holding.ticker);
+                if (quote) {
+                    holding.name = quote.longName || holding.name;
+                    holding.currency = quote.currency || holding.currency;
+                    if (Number.isFinite(quote.regularMarketVolume)) {
+                        volumeSum += quote.regularMarketVolume;
+                    }
+                }
+                const history = histories[index];
+                if (history) {
+                    holding.return12m = history.return12m;
+                    holding.maxDrawdown = history.maxDrawdown;
+                    holding.series = history.series.map((point) => ({
+                        timestamp: point.timestamp,
+                        normalized: point.normalized
+                    }));
+                }
+            });
+            renderPortfolio();
+            const aggregates = computePortfolioAggregates();
+            updateHeroMetrics({ ...aggregates, volumeSum });
+            lastUpdateTime = new Date();
+            if (portfolioTag && lastUpdateTime) {
+                portfolioTag.textContent = `Aktualizace ${lastUpdateTime.toLocaleTimeString('cs-CZ', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })}`;
+            }
+        }
+
+        async function refreshMarketData() {
+            try {
+                const quoteMap = await fetchQuotes(trackedTickers);
+                applyQuotesToStockIdeas(quoteMap);
+                await updatePortfolioData(quoteMap);
+                logConsoleMessage('Aktualizace z Yahoo Finance proběhla úspěšně.');
+            } catch (error) {
+                console.error('Chyba při načítání tržních dat', error);
+                logConsoleMessage(`Chyba při načítání dat: ${error.message}`);
+                if (portfolioTag) {
+                    portfolioTag.textContent = 'Chyba načítání dat';
+                }
+            }
+        }
+
+        renderStockIdeas();
+        renderPortfolio();
+        drawChartFromSeries([]);
+        refreshMarketData();
+        setInterval(refreshMarketData, 300000);
+
+        window.addEventListener('resize', () => {
+            drawChartFromSeries(portfolioSeries);
+        });
+
+        const events = [
+            'AI Sentiment bot | Režim sledování globálních technologických titulů',
+            'Order Executor | Sleduji živá data pro automatické plnění přes API',
+            'Risk Engine | Aktualizace hodnot VaR z nových tržních cen',
+            'Macro Feed | Import makro ukazatelů pro úpravu expozic',
+            'Compliance | Audit log synchronizován s cloudovým úložištěm',
+            'Strategy Lab | Kontrola výkonnosti strojově učených strategií'
+        ];
+        let eventIndex = 0;
+
+        function pushStaticEvent() {
+            logConsoleMessage(events[eventIndex % events.length]);
+            eventIndex += 1;
+        }
+
+        if (events.length) {
+            pushStaticEvent();
+            setInterval(pushStaticEvent, 6000);
+        }
+
+        const form = document.querySelector('.newsletter form');
+        if (form) {
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const email = form.email.value.trim();
+                if (!email) return;
+                logConsoleMessage(`[Sandbox] Přístup odeslán na ${email}`);
+                form.reset();
+            });
+        }
+    </script>
+</body>
+</html>
