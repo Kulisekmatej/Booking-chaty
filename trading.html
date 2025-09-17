@@ -1221,9 +1221,10 @@
             const denominator = Math.max(series.length - 1, 1);
             const valueRange = maxValue - minValue;
 
+            const CENTER_RATIO = 0.5;
             series.forEach((point, index) => {
-                const xRatio = series.length === 1 ? 0.5 : index / denominator;
-                const yRatio = valueRange === 0 ? 0.5 : (point.value - minValue) / valueRange;
+                const xRatio = series.length === 1 ? CENTER_RATIO : index / denominator;
+                const yRatio = valueRange === 0 ? CENTER_RATIO : (point.value - minValue) / valueRange;
                 const x = padding + xRatio * width;
                 const y = padding + height - yRatio * height;
                 if (index === 0) {
