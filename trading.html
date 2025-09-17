@@ -1438,10 +1438,21 @@
             }
         }
 
+        async function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
         async function updatePortfolioData(quoteMap) {
-            const histories = await Promise.all(
-                portfolioHoldings.map((holding) => fetchHistory(holding.ticker).catch(() => null))
-            );
+            const histories = [];
+            for (const holding of portfolioHoldings) {
+                try {
+                    const history = await fetchHistory(holding.ticker);
+                    histories.push(history);
+                } catch (e) {
+                    histories.push(null);
+                }
+                await sleep(200); // 200ms delay between requests
+            }
             let volumeSum = 0;
             portfolioHoldings.forEach((holding, index) => {
                 const quote = quoteMap.get(holding.ticker);
